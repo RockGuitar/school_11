@@ -48,8 +48,18 @@ public class StudentController {
     }
 
     @GetMapping("/average-age")
-    public double getStudentsAverageAge(){
+    public double getStudentsAverageAge () {
         return studentService.getAverageAge();
+    }
+
+    @GetMapping("/print-names")
+    public void getAllStudentNames () {
+        studentService.getAllStudentNames();
+    }
+
+    @GetMapping("/print-names-sync")
+    public void getAllStudentNamesSync () {
+        studentService.getAllStudentNamesSync();
     }
 }
 

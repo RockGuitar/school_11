@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 @Service
 public class StudentServiceImpl implements StudentService {
 
+    public static int count = 0;
+
+
     Logger studentLogger = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     private StudentRepository studentRepository;
@@ -77,5 +80,55 @@ public class StudentServiceImpl implements StudentService {
                 .collect(Collectors.averagingDouble(student -> student.getAge()));
     }
 
+    // Несинхронизированные потоки с методом printStudentName
+    public static void printStudentName ( List<String> names, int nameIndex ) {
+        System.out.println(names.get(nameIndex) + " " + count);
+        count++;
+    }
 
+    public void getAllStudentNames () {
+        List<String> studentNames = studentRepository.findAll().stream()
+                .map(s -> s.getName())
+                .collect(Collectors.toList());
+
+        new Thread(() -> {
+            printStudentName(studentNames, 2);
+            printStudentName(studentNames, 3);
+        }).start();
+
+        printStudentName(studentNames, 0);
+        printStudentName(studentNames, 1);
+
+        new Thread(() -> {
+            printStudentName(studentNames, 4);
+            printStudentName(studentNames, 5);
+        }).start();
+    }
+
+    // Синхронизированные потоки
+    public static void printStudentNameSync ( List<String> names, int nameIndex ) {
+        synchronized (StudentServiceImpl.class) {
+            System.out.println(names.get(nameIndex) + " " + count);
+            count++;
+        }
+    }
+
+    public void getAllStudentNamesSync () {
+        List<String> studentNames = studentRepository.findAll().stream()
+                .map(s -> s.getName())
+                .collect(Collectors.toList());
+
+        new Thread(() -> {
+            printStudentNameSync(studentNames, 2);
+            printStudentNameSync(studentNames, 3);
+        }).start();
+
+        printStudentNameSync(studentNames, 0);
+        printStudentNameSync(studentNames, 1);
+
+        new Thread(() -> {
+            printStudentNameSync(studentNames, 4);
+            printStudentNameSync(studentNames, 5);
+        }).start();
+    }
 }

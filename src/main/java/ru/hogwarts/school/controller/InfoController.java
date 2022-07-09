@@ -23,4 +23,5 @@ public class InfoController {
                 .reduce(0, (a, b) -> a + b );
         return sum;
     }
+
 }
