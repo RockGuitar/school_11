@@ -21,5 +21,9 @@ public interface StudentService {
 
     Collection<Student> getStudentsWithFirstLetterAsA ();
 
-    public double getAverageAge ();
+    double getAverageAge ();
+
+    void getAllStudentNames ();
+
+    void getAllStudentNamesSync ();
 }
